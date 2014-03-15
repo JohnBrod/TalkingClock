@@ -48,17 +48,8 @@ namespace TalkingClock
                 var request = new byte[100];
                 client.Receive(request);
                 Console.WriteLine("Request received, sending repsonse...");
-                client.Send(GetTime());
+                client.Send(DateTime.Now.ToLongTimeString().AsBytes());
             }
-        }
-
-        private static byte[] GetTime()
-        {
-            var timeString = DateTime.Now.ToLongTimeString();
-            var time = new byte[timeString.Length * sizeof(char)];
-            Buffer.BlockCopy(timeString.ToCharArray(), 0, time, 0, time.Length);
-
-            return time;
         }
     }
 }

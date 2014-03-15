@@ -16,7 +16,7 @@ namespace AskingClient
 
             while (true)
             {
-                askTime.Send(Message("Time"));
+                askTime.Send("Time".AsBytes());
 
                 // need something to store the incoming response
                 var response = new byte[100];
@@ -24,28 +24,10 @@ namespace AskingClient
                 // Receive will block until we get a response
                 askTime.Receive(response);
 
-                // communication was in bytes so it should be converted into a string so it can be displayed
-                var time = GetString(response).TrimEnd('\0');
-
-                Console.WriteLine("Time is " + time);
+                Console.WriteLine("Time is " + response.AsString());
 
                 Console.ReadLine();
             }
-        }
-
-        private static byte[] Message(string msg)
-        {
-            var msgBytes = new byte[msg.Length * sizeof(char)];
-            Buffer.BlockCopy(msg.ToCharArray(), 0, msgBytes, 0, msgBytes.Length);
-
-            return msgBytes;
-        }
-
-        static string GetString(byte[] bytes)
-        {
-            var chars = new char[bytes.Length / sizeof(char)];
-            Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
-            return new string(chars);
         }
     }
 }
