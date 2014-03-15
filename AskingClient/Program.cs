@@ -14,18 +14,31 @@ namespace AskingClient
             var askTime = new Socket(ipAddr.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             askTime.Connect(ipAddr, 4510);
 
-            // need something to store the incoming response
-            var response = new byte[100];
+            while (true)
+            {
+                askTime.Send(Message("Time"));
 
-            // Receive will block until we get a response
-            askTime.Receive(response);
+                // need something to store the incoming response
+                var response = new byte[100];
 
-            // communication was in bytes so it should be converted into a string so it can be displayed
-            var time = GetString(response);
+                // Receive will block until we get a response
+                askTime.Receive(response);
 
-            Console.WriteLine("Time is " + time);
+                // communication was in bytes so it should be converted into a string so it can be displayed
+                var time = GetString(response).TrimEnd('\0');
 
-            Console.Read();
+                Console.WriteLine("Time is " + time);
+
+                Console.ReadLine();
+            }
+        }
+
+        private static byte[] Message(string msg)
+        {
+            var msgBytes = new byte[msg.Length * sizeof(char)];
+            Buffer.BlockCopy(msg.ToCharArray(), 0, msgBytes, 0, msgBytes.Length);
+
+            return msgBytes;
         }
 
         static string GetString(byte[] bytes)

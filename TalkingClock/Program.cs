@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace TalkingClock
 {
@@ -34,11 +35,19 @@ namespace TalkingClock
                 // request is a client socket and will be used for this piece of communication
                 var client = server.Accept();
 
-                Console.WriteLine("Request received, sending repsonse...");
+                Console.WriteLine("Connection accepted");
 
-                // send the current time. 
-                // communicating at this level could be with a program written in any language so 
-                // the most generic form of data, bytes, are used
+                Task.Factory.StartNew(() => Chat(client));
+            }
+        }
+
+        private static void Chat(Socket client)
+        {
+            while (true)
+            {
+                var request = new byte[100];
+                client.Receive(request);
+                Console.WriteLine("Request received, sending repsonse...");
                 client.Send(GetTime());
             }
         }
